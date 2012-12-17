@@ -299,13 +299,17 @@ x = myDataFrame$previous
 y = myDataFrame$incumbent.incumbent
 z = myDataFrame$newcomer.incumbent
 
-#find the number of runs
-numberOfRuns = length(unique(myDataFrame$runnumber))
+
+#get all the unique run numbers
+uniqueRunNumbers = unique(myDataFrame$runnumber)
+
+allColors = colors() #there's about 657 colors in the R palette
 #generate a random list of colors that will correspond to each run number
-#See http://research.stowers-institute.org/efg/R/Color/Chart/ for more info.  R has a set of 657 defined colors... or you could just work directly with RGB values
-colorList = round(runif(numberOfRuns, 1, 657))
+colorList = allColors[round(runif(numberOfRuns, 1, length(allColors)))]
+
 #make a vector of the colors that correspond to each data point
 colors = factor(myDataFrame$runnumber, labels=colorList)
+
 #draw lots of colored spheres
 spheres3d(x,y,z, radius=0.5, color=colors)
 
