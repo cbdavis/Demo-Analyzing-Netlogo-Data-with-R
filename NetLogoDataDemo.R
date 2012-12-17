@@ -24,6 +24,8 @@ options(stringsAsFactors = FALSE)
 #   * hexbin - used for one of the histogram examples
 #   * igraph - network analysis
 #   * rgl - makes 3d graphs 
+#   * akima
+#   * reshape
 
 #####Basic R examples
 #See http://www.statmethods.net/index.html for a good overview of R
@@ -105,10 +107,11 @@ d %*% t(e)
 ######Load in libraries needed for plotting
 #TODO: Make sure that you have these packages installed where you see "library(something)"
 
+#Load the ggplot2 library which is used for most of the visualizations here
+#to understand why this library is cool, just do a google image search: https://www.google.com/search?q=ggplot2&tbm=isch
 #See http://docs.ggplot2.org/current/ for documentation
 #Also http://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf
 #and http://had.co.nz/ggplot2/book.pdf
-#ggplot2 is used for most of the visualizations here
 #Note that plot() is not the same as ggplot()
 #these are from two separate packages
 library(ggplot2)
@@ -127,6 +130,7 @@ library(rgl)
 #this library is needed for the interp function
 library(akima)
 
+############### MAKE SURE THAT THE WORKING DIRECTORY IS SET ###############
 #this line below sets the current working directory 
 #setwd("/home/cbdavis/Desktop/svn/ChrisDavis/PhD/R/NetlogoDemo")
 
@@ -197,8 +201,15 @@ print(scatterplot) #display the scatterplot
 #Now save the plot
 ggsave(scatterplot, file="scatter.png") 
 
+#do the same with lines.  The only change from above is the addition of "group=runnumber" 
+# and geom_line is used instead of geom_point
+ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, group=runnumber)) + #use myDataFrame for the data, columns for x and y
+  geom_line(aes(colour = runnumber)) + #we want to use points, colored by runnumber
+  xlab("step") +  #specify x and y labels
+  ylab("average component size") + 
+  ggtitle("Average component size over time") #give the plot a title
 
-#By default, only one graph window will be open, and new graphs will overwrite the old ones
+#You can navigate back and forth between different graphs by using the left/right arrows in the "Plots" window
 #To have multiple graph windows open, you need to tell R specifically to open a new window
 #If you're using Windows, this will looks something like this
 #
@@ -208,7 +219,7 @@ ggsave(scatterplot, file="scatter.png")
 #	windows()
 #	put your code for plot 2 here
 #
-#For mac, you would use macintosh() instead of windows.  For Unix, you would use X11()
+#For mac, you would use macintosh() instead of windows.  For Unix/Linux, you would use X11()
 #See http://www.statmethods.net/graphs/creating.html for more info
 
 #create a 2d histogram with hexagonal bins
@@ -217,13 +228,6 @@ hexBinExample = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, fil
 print(hexBinExample)
 ggsave(hexBinExample, file="hexBinExample.png") 
 
-#do a scatter plot and then also plot some polygons to show the density of points
-scatterPlotWithPolygonsIndicatingDensity = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + 
-                                                  geom_point() + 
-                                                  stat_density2d(aes(fill = ..level..), geom="polygon") 
-
-
-print(scatterPlotWithPolygonsIndicatingDensity)
 ggsave(scatterPlotWithPolygonsIndicatingDensity, file="scatterPlotWithPolygonsIndicatingDensity.png") 
 
 #similar example, but just give me a heatmap, without the scatter plot
@@ -238,18 +242,24 @@ simpleHistogram = ggplot(data=myDataFrame, aes(x=averageComponentSize)) + geom_h
 print(simpleHistogram)
 ggsave(simpleHistogram, file="simpleHistogram.png") 
 
-#instead of a histogram, draw lines, where each line represents a distinct runnumber
-linegraph = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, group=runnumber)) + geom_line()
-print(linegraph)
-ggsave(linegraph, file="linegraph.png") 
-
 #now just give me a boxplot
-boxplot = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, group=runnumber)) + geom_boxplot()
+# "group=round(step/25)" means that we group all the data into boxes 25 steps wide
+# If we just said "group=step", then we would have 500 boxes, which fills up the whole plot
+# and is hard to read
+boxplot = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, group=round(step/25))) + 
+                geom_boxplot()
+
 print(boxplot)
 ggsave(boxplot, file="boxplot.png") 
 
 #show a matrix (i.e. a "facet grid") of individual graphs where every single
 #graph show the values encountered for a single permutation of p & q values
+boxplot = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, group=round(step/25))) + 
+                  geom_boxplot() + 
+                  facet_grid(p ~ q, scales="free")
+print(boxplot)
+
+#do the same, now just with lines
 facetGridWithLines = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + 
                             geom_line() + 
                             facet_grid(p ~ q, scales="free")
@@ -337,12 +347,13 @@ z = myDataFrame$newcomer.incumbent
 
 #get all the unique run numbers
 uniqueRunNumbers = unique(myDataFrame$runnumber)
-
+numberOfRuns = length(uniqueRunNumbers)
 allColors = colors() #there's about 657 colors in the R palette
 #generate a random list of colors that will correspond to each run number
 colorList = allColors[round(runif(numberOfRuns, 1, length(allColors)))]
 
 #make a vector of the colors that correspond to each data point
+#this will give a warning, but don't worry about it
 colors = factor(myDataFrame$runnumber, labels=colorList)
 
 #draw lots of colored spheres
