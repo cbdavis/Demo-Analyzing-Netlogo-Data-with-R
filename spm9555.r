@@ -28,11 +28,24 @@ options(stringsAsFactors = FALSE)
 #####Basic R examples
 #See http://www.statmethods.net/index.html for a good overview of R
 
-#Main components of what you're seeing
-#engine - this is part that does all the calculations, processing.  You can access it directly from the command line
-#gui - this is a user-friendly interfact that talks directly to the R engine.  Whenever you click on something, the gui is basically sending the corresponding command to the R engine
-#script - the file you're reading right now that tells the commands to be executed
-#data file - many different formats can be used, although csv is one of the easiest to work with.
+#Main components of what you're seeing:
+# RStudio has four panels, and in the default config these are:
+### Top Left - Code - here you can open and work on different script files
+
+### Top Right - Workspace/History
+# This shows all the variables and functions that are currently loaded in the workspace
+# You can click on the variables to see their values
+# The history shows all of the commands that you have run.
+
+### Bottom Left - Console
+# commands can be run here
+# You can also find documentation for commands by typing in ?commandName to get help, i.e. ?sum
+
+### Bottom Right - Files/Plots/Packages/Help
+# Files - This shows everything in your current working directory
+# Plots - Once you start plotting, multiple plots will be stored here.  You can go back and forth between them
+# Packages - Shows all the packages installed and currently loaded
+# Help - Shows documentation for varous functions.  
 
 #You can run R in an interactive mode, where you only run selected statements.  
 #In RStudio, you will see the options like "Run current line" and "Run selection"
