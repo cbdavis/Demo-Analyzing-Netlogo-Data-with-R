@@ -228,8 +228,6 @@ hexBinExample = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, fil
 print(hexBinExample)
 ggsave(hexBinExample, file="hexBinExample.png") 
 
-ggsave(scatterPlotWithPolygonsIndicatingDensity, file="scatterPlotWithPolygonsIndicatingDensity.png") 
-
 #similar example, but just give me a heatmap, without the scatter plot
 simpleHeatMapOfScatterPlot = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + 
                                     stat_density2d(geom="tile", aes(fill = ..density..), contour = FALSE) 
@@ -375,9 +373,12 @@ for (i in c(1:length(colorList))) {
 axes3d(labels=TRUE, tick=TRUE)
 title3d(main="title is here", xlab="previous", ylab="incumbent.incumbent", zlab="newcomer.incumbent")
 grid3d(c("x", "y+", "z"), n=50)
+
+#set the size of the window to 750x750 pixels
+par3d(windowRect = c(0,0,750,750))
 #take a picture of this awesome creation
 #You may want to do this manually in order to get the correct rotation, magnification of the picture.  There should be a way within rgl to set this automatically also
-rgl.snapshot("Awesome3dImage.png", fmt="png")
+rgl.snapshot("Awesome3dImage.png", fmt="png", top=TRUE)
 
 
 #### create a surface plot in rgl ####
