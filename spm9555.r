@@ -11,7 +11,7 @@ options(stringsAsFactors = FALSE)
 # * R code
 # * the nlogo file used to generate the data. 
 #   This also includes methods that can write the network structure to a file (included as network.txt)
-# * TeamAssemblyExam? -6-07-2010-Exam-table.csv - the data from last year's exam
+# * TeamAssemblyModelData.csv - the data from last year's exam
 
 # Put all these into the same directory, open up RStudio
 # and set your working directory to this directory containing the files. 
@@ -116,7 +116,7 @@ library(rgl)
 #setwd("/home/cbdavis/Desktop/svn/ChrisDavis/PhD/R/NetlogoDemo")
 #read in the data. skip the first 6 lines, the line after that is the header, and the columns are separated by commas
 #You can either specify the full path to the file, or make sure that the working directory for R points to the directory containing the file
-myDataFrame = read.table("TeamAssemblyExam-6-07-2010-Exam-table.csv", skip = 6, sep = ",",head=TRUE)
+myDataFrame = read.table("TeamAssemblyModelData.csv", skip = 6, sep = ",",head=TRUE)
 
 #This gives you a quick summary of what's in the data
 #This is especially important since it tells you what the column names are.
