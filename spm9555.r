@@ -105,7 +105,7 @@ d %*% t(e)
 ######Load in libraries needed for plotting
 #TODO: Make sure that you have these packages installed where you see "library(something)"
 
-#See http://had.co.nz/ggplot2/ for documentation
+#See http://docs.ggplot2.org/current/ for documentation
 #Also http://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf
 #and http://had.co.nz/ggplot2/book.pdf
 #ggplot2 is used for most of the visualizations here
@@ -124,8 +124,12 @@ library(reshape)
 #Manual: http://cran.r-project.org/web/packages/rgl/rgl.pdf
 library(rgl)
 
+#this library is needed for the interp function
+library(akima)
+
 #this line below sets the current working directory 
 #setwd("/home/cbdavis/Desktop/svn/ChrisDavis/PhD/R/NetlogoDemo")
+
 #read in the data. skip the first 6 lines, the line after that is the header, and the columns are separated by commas
 #You can either specify the full path to the file, or make sure that the working directory for R points to the directory containing the file
 myDataFrame = read.table("TeamAssemblyModelData.csv", skip = 6, sep = ",",head=TRUE)
@@ -181,8 +185,13 @@ myDataFrame$count.turtles[indexWithMaxNumTurtles]
 plot(sort(myDataFrame$count.turtles))
 
 #just give me a quick scatterplot
-scatterplot = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + geom_point() + xlab("step") + ylab("average component size") + ggtitle("Average component size over time")
-print(scatterplot) #display the scatterplot. 
+scatterplot = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + #use myDataFrame for the data, columns for x and y
+                    geom_point(aes(colour = runnumber)) + #we want to use points, colored by runnumber
+                    xlab("step") +  #specify x and y labels
+                    ylab("average component size") + 
+                    ggtitle("Average component size over time") #give the plot a title
+
+print(scatterplot) #display the scatterplot
 #Note: if you just do "ggplot(...)" instead of "something = ggplot(...)" then the image will be drawn automatically, 
 #but you won't have a way to save it, except by clicking on the GUI for the image.
 #Now save the plot
@@ -203,17 +212,24 @@ ggsave(scatterplot, file="scatter.png")
 #See http://www.statmethods.net/graphs/creating.html for more info
 
 #create a 2d histogram with hexagonal bins
-hexBinExample = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, fill=..density..)) + stat_binhex(bins=50)
+hexBinExample = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, fill=..density..)) + 
+                    stat_binhex(bins=50) 
 print(hexBinExample)
 ggsave(hexBinExample, file="hexBinExample.png") 
 
 #do a scatter plot and then also plot some polygons to show the density of points
-scatterPlotWithPolygonsIndicatingDensity = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + geom_point()+ stat_density2d(aes(fill = ..level..), geom="polygon") 
+scatterPlotWithPolygonsIndicatingDensity = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + 
+                                                  geom_point() + 
+                                                  stat_density2d(aes(fill = ..level..), geom="polygon") 
+
+
 print(scatterPlotWithPolygonsIndicatingDensity)
 ggsave(scatterPlotWithPolygonsIndicatingDensity, file="scatterPlotWithPolygonsIndicatingDensity.png") 
 
 #similar example, but just give me a heatmap, without the scatter plot
-simpleHeatMapOfScatterPlot = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + stat_density2d(geom="tile", aes(fill = ..density..), contour = FALSE) 
+simpleHeatMapOfScatterPlot = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + 
+                                    stat_density2d(geom="tile", aes(fill = ..density..), contour = FALSE) 
+
 print(simpleHeatMapOfScatterPlot)
 ggsave(simpleHeatMapOfScatterPlot, file="simpleHeatMapOfScatterPlot.png") 
 
@@ -234,12 +250,18 @@ ggsave(boxplot, file="boxplot.png")
 
 #show a matrix (i.e. a "facet grid") of individual graphs where every single
 #graph show the values encountered for a single permutation of p & q values
-facetGridWithLines = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + geom_line() + facet_grid(p ~ q, scales="free")
+facetGridWithLines = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + 
+                            geom_line() + 
+                            facet_grid(p ~ q, scales="free")
+
 print(facetGridWithLines)
 ggsave(facetGridWithLines, file="facetGridWithLines.png") 
 
 #same as above, but look at the fraction of agents in the giant component
-facetGridWithPoints = ggplot(data=myDataFrame, aes(x=step, y=fractionAgentsInGiantComponent)) + geom_point() + facet_grid(p ~ q, scales="free")
+facetGridWithPoints = ggplot(data=myDataFrame, aes(x=step, y=fractionAgentsInGiantComponent)) + 
+                              geom_point() + 
+                              facet_grid(p ~ q, scales="free")
+
 print(facetGridWithPoints)
 ggsave(facetGridWithPoints, file="facetGridWithPoints.png") 
 
@@ -257,7 +279,14 @@ ggsave(heatMapStep50, file="heatMapStep50.png")
 indices = which((myDataFrame$step %% 50) == 0)
 df = myDataFrame[indices, colnames(myDataFrame)]
 #WARNING - make sure that you include the smaller dataframe, otherwise this will try to plot the whole set of data, and your computer will explode
-heatMapFacetWrap = ggplot(data=df, aes(x=p, y=q)) + geom_tile(aes(fill=fractionAgentsInGiantComponent)) + scale_fill_continuous("fraction\nof\nagents") + facet_wrap(~ step) + xlab("p") + ylab("q") + ggtitle("Heatmap of fraction of agents\nin giant component at steps")
+heatMapFacetWrap = ggplot(data=df, aes(x=p, y=q)) + 
+                          geom_tile(aes(fill=fractionAgentsInGiantComponent)) + 
+                          scale_fill_continuous("fraction\nof\nagents") + 
+                          facet_wrap(~ step) + 
+                          xlab("p") + 
+                          ylab("q") + 
+                          ggtitle("Heatmap of fraction of agents\nin giant component at steps")
+
 print(heatMapFacetWrap)
 ggsave(heatMapFacetWrap, file="heatMapFacetWrap.png") 
 
@@ -280,7 +309,10 @@ ggsave(heatMapFacetWrap, file="heatMapFacetWrap.png")
 #It's a good idea to run summary(data2) over the melted data to make sure that the values for "variable" are the columns that you think they should be.  
 #It may merge in additional columns if you're not careful.
 data2 = melt(myDataFrame, id=c("runnumber", "max.downtime", "layout", "plot", "team.size", "p", "q", "step", "count.turtles", "fractionAgentsInGiantComponent", "averageComponentSize"))
-areaplot = ggplot(data=data2, aes(x=step, y=value)) + geom_area(aes(fill=variable)) + facet_grid(p ~ q, scales="free")
+areaplot = ggplot(data=data2, aes(x=step, y=value)) + 
+                  geom_area(aes(fill=variable)) + 
+                  facet_grid(p ~ q, scales="free")
+
 print(areaplot)
 ggsave(areaplot, file="areaplot.png") 
 
@@ -288,7 +320,10 @@ ggsave(areaplot, file="areaplot.png")
 #This can be useful if there is a phase delay in the data, similar to what is seen in the wolf-sheep model
 #What you often see with this type of visualization is that there is a trail of values from the beginning of the simulation
 #that then leads to a large cluster (i.e. attractor) of values.  
-facetGridScatterPlot = ggplot(data=myDataFrame, aes(x=incumbent.incumbent, y=newcomer.newcomer)) + geom_point() + facet_grid(p ~ q, scales="free")
+facetGridScatterPlot = ggplot(data=myDataFrame, aes(x=incumbent.incumbent, y=newcomer.newcomer)) + 
+                              geom_point() + 
+                              facet_grid(p ~ q, scales="free")
+
 print(facetGridScatterPlot)
 ggsave(facetGridScatterPlot, file="facetGridScatterPlot.png") 
 
@@ -318,7 +353,11 @@ spheres3d(x,y,z, radius=0.5, color=colors)
 #This for loop doesn't have to be included, and many slow down the visualization
 for (i in c(1:length(colorList))) {
   locs = which(myDataFrame$runnumber == i)
-  lines3d(myDataFrame$previous[locs], myDataFrame$incumbent.incumbent[locs], myDataFrame$newcomer.incumbent[locs], color=colors[locs], lwd=5)
+  lines3d(myDataFrame$previous[locs], # x
+          myDataFrame$incumbent.incumbent[locs], # y 
+          myDataFrame$newcomer.incumbent[locs], # z
+          color=colors[locs], #color to use
+          lwd=5)   #line width
 }
 
 #add the axes, title, and grid to the plot
@@ -331,9 +370,6 @@ rgl.snapshot("Awesome3dImage.png", fmt="png")
 
 
 #### create a surface plot in rgl ####
-
-#this library is needed for the interp function
-library(akima)
 
 #Get some sample data to plot
 #make a new data frame at step = 50
