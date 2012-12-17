@@ -1,22 +1,29 @@
-
 ############ !!!!!!!!!!!!!!!!!!!!!!!!!! ##########################
 #Put this at the top of every file, unless you really really want to work with factors
 #this will save you a lot of confusion
 options(stringsAsFactors = FALSE)
 
-#The main wiki page around these examples is at http://wiki.tudelft.nl/bin/view/Education/SPM955xABMofCAS/LectureDataAnalysis
-#code + data we will be using is at https://svn.eeni.tbm.tudelft.nl/ChrisDavis/PhD/R/NetlogoDemo/ you can access this with your NetID . The contents are:
-#    * R code
-#    * the nlogo file used to generate the data. This also includes methods that can write the network structure to a file (included as network.txt)
-#    * TeamAssemblyExam? -6-07-2010-Exam-table.csv - the data from last year's exam
-#    * Put all these into the same directory, open up Rkward, and set your working directory to this directory containing the files. Click on "Workspace -> Set Working Directory" to do this. 
+#The main wiki page around these examples is at:
+#http://wiki.tudelft.nl/bin/view/Education/SPM955xABMofCAS/LectureDataAnalysis
+#code + data we will be using is at https://github.com/cbdavis/Demo-Analyzing-Netlogo-Data-with-R
+
+# The contents are:
+# * R code
+# * the nlogo file used to generate the data. 
+#   This also includes methods that can write the network structure to a file (included as network.txt)
+# * TeamAssemblyExam? -6-07-2010-Exam-table.csv - the data from last year's exam
+
+# Put all these into the same directory, open up RStudio
+# and set your working directory to this directory containing the files. 
+# Click on "Tools -> Set Working Directory -> Choose Directory" to do this. 
 
 #Then install the necessary packages for R
-#    * click on "Settings -> Configure Packages", then Click on Install tab, "Fetch list", pick a Mirror site (Amsterdam or Utrecht), select the packages (listed below), then "Install Selected"
-#          * ggplot2 - this will be used to do most of the plotting.
-#          * hexbin - used for one of the histogram examples
-#          * igraph - network analysis
-#          * rgl - makes 3d graphs 
+# * In the bottom right quadrant, there is a "Packages" tab, with an option to "Install Packages". 
+#   Click on this to install the following libraries: 
+#   * ggplot2 - this will be used to do most of the plotting.
+#   * hexbin - used for one of the histogram examples
+#   * igraph - network analysis
+#   * rgl - makes 3d graphs 
 
 #####Basic R examples
 #See http://www.statmethods.net/index.html for a good overview of R
@@ -28,8 +35,9 @@ options(stringsAsFactors = FALSE)
 #data file - many different formats can be used, although csv is one of the easiest to work with.
 
 #You can run R in an interactive mode, where you only run selected statements.  
-#In RKWard, you will see the options like "Run current line" and "Run selection"
-#You can also run an R script all at once, which may be useful if you get a new data set, but want to rerun all the graphs.
+#In RStudio, you will see the options like "Run current line" and "Run selection"
+#You can also run an R script all at once, which may be useful if you get a new data set, 
+#but want to rerun all the graphs.
 
 #Add two numbers, this will only show the value in the console output
 1 + 1
