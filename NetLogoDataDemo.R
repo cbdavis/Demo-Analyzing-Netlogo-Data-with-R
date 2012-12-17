@@ -16,6 +16,8 @@ options(stringsAsFactors = FALSE)
 # Put all these into the same directory, open up RStudio
 # and set your working directory to this directory containing the files. 
 # Click on "Tools -> Set Working Directory -> Choose Directory" to do this. 
+# On a mac, this may also be:
+#     "Session -> Set Working Directory -> Choose Directory" to do this.
 
 #Then install the necessary packages for R
 # * In the bottom right quadrant, there is a "Packages" tab, with an option to "Install Packages". 
@@ -104,6 +106,8 @@ d %*% t(e)
 #Also, when you save R, it will request if you want to save the workspace
 #This means that it will save all the variables currently loaded in the workspace
 
+#use rm(variableName) to remove variables from the workspace
+
 ######Load in libraries needed for plotting
 #TODO: Make sure that you have these packages installed where you see "library(something)"
 
@@ -136,7 +140,7 @@ library(akima)
 
 #read in the data. skip the first 6 lines, the line after that is the header, and the columns are separated by commas
 #You can either specify the full path to the file, or make sure that the working directory for R points to the directory containing the file
-myDataFrame = read.table("TeamAssemblyModelData.csv", skip = 6, sep = ",",head=TRUE)
+myDataFrame = read.table("TeamAssemblyModelData.csv", skip = 6, sep = ",", head=TRUE)
 
 #This gives you a quick summary of what's in the data
 #This is especially important since it tells you what the column names are.
@@ -235,15 +239,22 @@ simpleHeatMapOfScatterPlot = ggplot(data=myDataFrame, aes(x=step, y=averageCompo
 print(simpleHeatMapOfScatterPlot)
 ggsave(simpleHeatMapOfScatterPlot, file="simpleHeatMapOfScatterPlot.png") 
 
+fileprefix="histogram"
+val = 3
+filename = paste(fileprefix, val, ".png", sep="")
+
 #actually, I'm in the mood for a histogram
 simpleHistogram = ggplot(data=myDataFrame, aes(x=averageComponentSize)) + geom_histogram() 
 print(simpleHistogram)
-ggsave(simpleHistogram, file="simpleHistogram.png") 
+ggsave(simpleHistogram, file=filename) 
 
 #now just give me a boxplot
 # "group=round(step/25)" means that we group all the data into boxes 25 steps wide
 # If we just said "group=step", then we would have 500 boxes, which fills up the whole plot
 # and is hard to read
+ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, group=step)) + 
+  geom_boxplot()
+       
 boxplot = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, group=round(step/25))) + 
                 geom_boxplot()
 
