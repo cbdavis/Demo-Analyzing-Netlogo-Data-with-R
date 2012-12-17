@@ -34,7 +34,8 @@ options(stringsAsFactors = FALSE)
 
 ### Top Right - Workspace/History
 # This shows all the variables and functions that are currently loaded in the workspace
-# You can click on the variables to see their values
+# You can click on the variables to see their values, which can be useful to inspect
+# how the code is operating.
 # The history shows all of the commands that you have run.
 
 ### Bottom Left - Console
@@ -43,14 +44,15 @@ options(stringsAsFactors = FALSE)
 
 ### Bottom Right - Files/Plots/Packages/Help
 # Files - This shows everything in your current working directory
-# Plots - Once you start plotting, multiple plots will be stored here.  You can go back and forth between them
+# Plots - Once you start plotting, multiple plots will be stored here.  
+#         There are arrows in this view that allow you to navigate between multiple plots
 # Packages - Shows all the packages installed and currently loaded
 # Help - Shows documentation for varous functions.  
 
-#You can run R in an interactive mode, where you only run selected statements.  
-#In RStudio, you will see the options like "Run current line" and "Run selection"
-#You can also run an R script all at once, which may be useful if you get a new data set, 
-#but want to rerun all the graphs.
+#You can run lines of code by highlighting them, and then clicking on "Run" above.
+#You can run all the code at once by doing Code -> Run Region -> Run All
+
+### Introduction to operations:
 
 #Add two numbers, this will only show the value in the console output
 1 + 1
@@ -97,12 +99,6 @@ h = d * e
 #matrix multiplication
 d %*% t(e)
 
-#in RKWard you can see the "Workspace" tab on the left side of the GUI
-#this will show all the packages that you have loaded.  
-#It will also list all of the variables that you have currently set in the workspace
-#It also allows you to get a summary of these and inspect their values
-#This can be quite useful for exploring what's happening.
-
 #Also, when you save R, it will request if you want to save the workspace
 #This means that it will save all the variables currently loaded in the workspace
 
@@ -119,6 +115,9 @@ library(ggplot2)
 
 #used for hexagonal binning for one of the plots
 library(hexbin)
+
+#used for reshaping the data, i.e. data in columns may need to be moved to individual rows, etc.
+library(reshape)
 
 #RGL is an OpenGL library that allows you to create 3D graphics
 #Package website: http://cran.r-project.org/web/packages/rgl/
@@ -182,7 +181,7 @@ myDataFrame$count.turtles[indexWithMaxNumTurtles]
 plot(sort(myDataFrame$count.turtles))
 
 #just give me a quick scatterplot
-scatterplot = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + geom_point() + xlab("step") + ylab("average component size") + opts(title="Average component size over time")
+scatterplot = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + geom_point() + xlab("step") + ylab("average component size") + ggtitle("Average component size over time")
 print(scatterplot) #display the scatterplot. 
 #Note: if you just do "ggplot(...)" instead of "something = ggplot(...)" then the image will be drawn automatically, 
 #but you won't have a way to save it, except by clicking on the GUI for the image.
@@ -224,8 +223,6 @@ print(simpleHistogram)
 ggsave(simpleHistogram, file="simpleHistogram.png") 
 
 #instead of a histogram, draw lines, where each line represents a distinct runnumber
-ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize)) + geom_line()
-ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, group=step)) + geom_line()
 linegraph = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, group=runnumber)) + geom_line()
 print(linegraph)
 ggsave(linegraph, file="linegraph.png") 
@@ -260,7 +257,7 @@ ggsave(heatMapStep50, file="heatMapStep50.png")
 indices = which((myDataFrame$step %% 50) == 0)
 df = myDataFrame[indices, colnames(myDataFrame)]
 #WARNING - make sure that you include the smaller dataframe, otherwise this will try to plot the whole set of data, and your computer will explode
-heatMapFacetWrap = ggplot(data=df, aes(x=p, y=q)) + geom_tile(aes(fill=fractionAgentsInGiantComponent)) + scale_fill_continuous("fraction\nof\nagents") + facet_wrap(~ step) + xlab("p") + ylab("q") + opts(title="Heatmap of fraction of agents\nin giant component at steps")
+heatMapFacetWrap = ggplot(data=df, aes(x=p, y=q)) + geom_tile(aes(fill=fractionAgentsInGiantComponent)) + scale_fill_continuous("fraction\nof\nagents") + facet_wrap(~ step) + xlab("p") + ylab("q") + ggtitle("Heatmap of fraction of agents\nin giant component at steps")
 print(heatMapFacetWrap)
 ggsave(heatMapFacetWrap, file="heatMapFacetWrap.png") 
 
