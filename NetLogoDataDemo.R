@@ -126,13 +126,6 @@ library(hexbin)
 #used for reshaping the data, i.e. data in columns may need to be moved to individual rows, etc.
 library(reshape)
 
-#RGL is an OpenGL library that allows you to create 3D graphics
-#Package website: http://cran.r-project.org/web/packages/rgl/
-#Manual: http://cran.r-project.org/web/packages/rgl/rgl.pdf
-library(rgl)
-
-#this library is needed for the interp function
-library(akima)
 
 ############### MAKE SURE THAT THE WORKING DIRECTORY IS SET ###############
 #this line below sets the current working directory 
@@ -158,8 +151,10 @@ colnames = colnames(myDataFrame)
 #Re-map these to whatever names you find useful.
 #You could also just do this by changing the header names in your data file.
 colnames[1] = "runnumber"
+colnames[2] = "maxdowntime"
 colnames[3] = "layout"
 colnames[4] = "plot"
+colnames[5] = "teamsize"
 colnames[8] = "step"
 #write the fixed values back to the data frame
 colnames(myDataFrame) = colnames
@@ -346,94 +341,69 @@ facetGridScatterPlot = ggplot(data=myDataFrame, aes(x=incumbent.incumbent, y=new
 print(facetGridScatterPlot)
 ggsave(facetGridScatterPlot, file="facetGridScatterPlot.png") 
 
-##### Show attractors for each run in 3D #####
-#here we create a scatterplot of the number of previous links vs. incumbent-incumbent vs. the number of necomer-incumbent links
-#each combination of x,y,z is from a single step from a single simulation run.
-x = myDataFrame$previous
-y = myDataFrame$incumbent.incumbent
-z = myDataFrame$newcomer.incumbent
+##### Querying data using SQLDF package #####
 
-x11() #this needs to be done, otherwise RStudio crashes
+# With this part of the tutorial, you're using SQL (http://en.wikipedia.org/wiki/SQL) to run queries over your data
 
-#get all the unique run numbers
-uniqueRunNumbers = unique(myDataFrame$runnumber)
-numberOfRuns = length(uniqueRunNumbers)
-allColors = colors() #there's about 657 colors in the R palette
-#generate a random list of colors that will correspond to each run number
-colorList = allColors[round(runif(numberOfRuns, 1, length(allColors)))]
+#used for querying data, performing aggregations, filtering, etc.
+library(sqldf)
+# instructions for the package - http://code.google.com/p/sqldf/
 
-#make a vector of the colors that correspond to each data point
-#this will give a warning, but don't worry about it
-colors = factor(myDataFrame$runnumber, labels=colorList)
+# The best place to start is via tutorials online.  Just search for something like "sqlite tutorial queries"
+# i.e. http://sqlite.awardspace.info/syntax/sqlitepg03.htm
 
-#draw lots of colored spheres
-spheres3d(x,y,z, radius=0.5, color=colors)
+# Official documentation: http://www.sqlite.org/lang.html
+# This is way more than you need, and tutorials are easier to understand,
+# but this shows you everything that you can do with the query language.
 
-#This connects each of the spheres with lines based on the step
-#based on this, we can see for each runnumber the path followed
-#This for loop doesn't have to be included, and many slow down the visualization
-for (i in c(1:length(colorList))) {
-  locs = which(myDataFrame$runnumber == i)
-  lines3d(myDataFrame$previous[locs], # x
-          myDataFrame$incumbent.incumbent[locs], # y 
-          myDataFrame$newcomer.incumbent[locs], # z
-          color=colors[locs], #color to use
-          lwd=5)   #line width
-}
+# The uppercase terms below are some of the more popular commands that you may find useful.  
+# You can also use lowercase in the queries.  Examples of their use are further below.
 
-#add the axes, title, and grid to the plot
-axes3d(labels=TRUE, tick=TRUE)
-title3d(main="title is here", xlab="previous", ylab="incumbent.incumbent", zlab="newcomer.incumbent")
-grid3d(c("x", "y+", "z"), n=50)
+# SELECT
+# FROM 
+# WHERE
+# AS
+# DISTINCT
+# COUNT
+# ORDER BY
+# DESC
+# GROUP BY
+# BETWEEN
+# AND
+# OR
+# MAX
+# MIN
 
-#set the size of the window to 750x750 pixels
-par3d(windowRect = c(0,0,750,750))
-#take a picture of this awesome creation
-#You may want to do this manually in order to get the correct rotation, magnification of the picture.  There should be a way within rgl to set this automatically also
-rgl.snapshot("Awesome3dImage.png", fmt="png", top=TRUE)
+#### NOTE - column names should not contain any punctionation, otherwise the queries may not work.
+# You need to change column names like "team.size" to something like "teamsize"
 
-
-#### create a surface plot in rgl ####
-
-#Get some sample data to plot
-#make a new data frame at step = 50
-indices = which(myDataFrame$step == 50)
-#first element is rows, second is columns
-df = myDataFrame[indices,]
-
-#set the values of x, y, and z.  After this, most of the code is copy/paste
-#here x, y, and z are assumed to be of the same length
-x = df$p
-y = df$q
-z = df$fractionAgentsInGiantComponent
-
-#interpolate the points into a matrix
-#The code below works if the x and y vectors are composed of regular intervals, i.e. 1,2,3... or 10,20,30...
-s = interp(x,y,z,xo=seq(min(x), max(x), length=length(unique(x))), yo=seq(min(y), max(y), length=length(unique(y))))
-#the new variable s is a data frame where s$x and s$y represent the rows and columns, and s$z is a matrix of heights
-#Alternatively you can use the code below.  By default, it will create a 40x40 grid
-#See http://hosho.ees.hokudai.ac.jp/~kubo/Rdoc/library/akima/html/interp.html for more documentation
-#s = interp(x,y,z)
-#next few lines set the range of colors to be used for the surface
-#make sure to remove NA values, otherwise the colors won't work (see na.rm=TRUE)
-zlim <- range(s$z, na.rm=TRUE)
-zlen <- zlim[2] - zlim[1] + 1
-colorlut <- terrain.colors(zlen) # height color lookup table
-col <- colorlut[ s$z-zlim[1]+1 ] # assign colors to heights for each point
-#here you can change the number of used to represent the different heights on the surface
-numColors = 50
-colorlut <- terrain.colors(numColors)
-#make sure to remove NA values, otherwise the colors won't work (see na.rm=TRUE)
-col <- colorlut [((max(s$z, na.rm=TRUE) - s$z)/(max(s$z, na.rm=TRUE) - min(s$z, na.rm=TRUE)) * (numColors-1)) + 1]
-open3d()
-#draw the surface
-surface3d(s$x, s$y, s$z, color=col, back="lines")
-#scale the length of all three axes to efficiently fit the display.  This means that the axes will use different scales
-aspect3d(1,1,1)
-axes3d(labels=TRUE, tick=TRUE)
-title3d(main="title is here", xlab="x axis", ylab="y axis", zlab="z axis")
-grid3d(c("x+", "y+", "z"), n=50)
-
+# just get me one row
+x = sqldf("SELECT * FROM myDataFrame LIMIT 1")
+# count the number of rows where the value for runnumber is equal to 1
+x = sqldf("SELECT COUNT(*) FROM myDataFrame WHERE runnumber=1")
+# the same, but where runnumber < 10
+x = sqldf("SELECT COUNT(*) FROM myDataFrame WHERE runnumber<10")
+# find the average fractionAgentsInGiantComponent for each runnumber (averaged over all ticks)
+x = sqldf("SELECT AVG(fractionAgentsInGiantComponent) AS avgFrac FROM myDataFrame GROUP BY runnumber")
+# same, but order the values for avgFrac descending
+x = sqldf("SELECT AVG(fractionAgentsInGiantComponent) AS avgFrac FROM myDataFrame GROUP BY runnumber ORDER BY avgFrac DESC")
+# same, but also give me the runnumber that corresponds to each value
+x = sqldf("SELECT runnumber, AVG(fractionAgentsInGiantComponent) AS avgFrac FROM myDataFrame GROUP BY runnumber ORDER BY avgFrac DESC")
+# plot stuff
+plot(x$runnumber, x$avgFrac)
+# find the distinct values for team.size
+x = sqldf("SELECT DISTINCT teamsize FROM myDataFrame")
+# get me the distinct combinations of p and q that were used
+x = sqldf("SELECT DISTINCT p, q FROM myDataFrame")
+# select a subset of the original data, and then run a query on that subset
+dataSubSet = sqldf("SELECT * FROM myDataFrame WHERE runnumber<10")
+x = sqldf("SELECT count(*) FROM dataSubSet")
+# get all rows where 20 <= p <= 60
+x = sqldf("SELECT * FROM myDataFrame WHERE p BETWEEN 20 AND 60")
+# get all data where two conditions are met
+x = sqldf("SELECT * FROM myDataFrame WHERE fractionAgentsInGiantComponent > 0.5 AND averageComponentSize > 10")
+# get me the row with the maximum value for the maximum average component size
+x = sqldf("SELECT *, MAX(averageComponentSize) FROM myDataFrame")
 
 ##### Working with network data #####
 library(igraph)
