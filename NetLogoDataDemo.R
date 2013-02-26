@@ -136,7 +136,7 @@ library(akima)
 
 ############### MAKE SURE THAT THE WORKING DIRECTORY IS SET ###############
 #this line below sets the current working directory 
-#setwd("/home/cbdavis/Desktop/svn/ChrisDavis/PhD/R/NetlogoDemo")
+#setwd("/home/cbdavis/Demo-Analyzing-Netlogo-Data-with-R")
 
 #read in the data. skip the first 6 lines, the line after that is the header, and the columns are separated by commas
 #You can either specify the full path to the file, or make sure that the working directory for R points to the directory containing the file
@@ -353,6 +353,7 @@ x = myDataFrame$previous
 y = myDataFrame$incumbent.incumbent
 z = myDataFrame$newcomer.incumbent
 
+x11() #this needs to be done, otherwise RStudio crashes
 
 #get all the unique run numbers
 uniqueRunNumbers = unique(myDataFrame$runnumber)
