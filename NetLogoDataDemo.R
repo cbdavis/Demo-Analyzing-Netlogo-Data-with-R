@@ -25,9 +25,11 @@ options(stringsAsFactors = FALSE)
 #   * ggplot2 - this will be used to do most of the plotting.
 #   * hexbin - used for one of the histogram examples
 #   * igraph - network analysis
+#   * reshape
+#   * sqldf - used for querying data, performing aggregations, filtering, etc.
 #   * rgl - makes 3d graphs 
 #   * akima
-#   * reshape
+
 
 #####Basic R examples
 #See http://www.statmethods.net/index.html for a good overview of R
@@ -252,10 +254,10 @@ ggsave(simpleHistogram, file=filename)
 # "group=round(step/25)" means that we group all the data into boxes 25 steps wide
 # If we just said "group=step", then we would have 500 boxes, which fills up the whole plot
 # and is hard to read
-ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, group=step)) + 
+ggplot(data=myDataFrame, aes(x=step, y=count.turtles, group=step)) + 
   geom_boxplot()
        
-boxplot = ggplot(data=myDataFrame, aes(x=step, y=averageComponentSize, group=round(step/25))) + 
+boxplot = ggplot(data=myDataFrame, aes(x=step, y=count.turtles, group=round(step/25))) + 
                 geom_boxplot()
 
 print(boxplot)
