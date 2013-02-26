@@ -126,6 +126,11 @@ library(hexbin)
 #used for reshaping the data, i.e. data in columns may need to be moved to individual rows, etc.
 library(reshape)
 
+#used for querying data, performing aggregations, filtering, etc.
+library(sqldf)
+
+#working with network data
+library(igraph)
 
 ############### MAKE SURE THAT THE WORKING DIRECTORY IS SET ###############
 #this line below sets the current working directory 
@@ -345,8 +350,6 @@ ggsave(facetGridScatterPlot, file="facetGridScatterPlot.png")
 
 # With this part of the tutorial, you're using SQL (http://en.wikipedia.org/wiki/SQL) to run queries over your data
 
-#used for querying data, performing aggregations, filtering, etc.
-library(sqldf)
 # instructions for the package - http://code.google.com/p/sqldf/
 
 # The best place to start is via tutorials online.  Just search for something like "sqlite tutorial queries"
@@ -406,7 +409,6 @@ x = sqldf("SELECT * FROM myDataFrame WHERE fractionAgentsInGiantComponent > 0.5 
 x = sqldf("SELECT *, MAX(averageComponentSize) FROM myDataFrame")
 
 ##### Working with network data #####
-library(igraph)
 
 #Complete documentation: http://igraph.sourceforge.net/doc/R/igraph.pdf and at http://igraph.sourceforge.net/doc/R/00Index.html
 #Examples: http://igraph.sourceforge.net/screenshots2.html
