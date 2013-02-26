@@ -329,7 +329,7 @@ ggsave(heatMapFacetWrap, file="heatMapFacetWrap.png")
 #data2$variable (a string indicating the original column name) and data2$value (the actual value from the original column).
 #It's a good idea to run summary(data2) over the melted data to make sure that the values for "variable" are the columns that you think they should be.  
 #It may merge in additional columns if you're not careful.
-data2 = melt(myDataFrame, id=c("runnumber", "max.downtime", "layout", "plot", "team.size", "p", "q", "step", "count.turtles", "fractionAgentsInGiantComponent", "averageComponentSize"))
+data2 = melt(myDataFrame, id=c("runnumber", "maxdowntime", "layout", "plot", "teamsize", "p", "q", "step", "count.turtles", "fractionAgentsInGiantComponent", "averageComponentSize"))
 areaplot = ggplot(data=data2, aes(x=step, y=value)) + 
                   geom_area(aes(fill=variable)) + 
                   facet_grid(p ~ q, scales="free")
