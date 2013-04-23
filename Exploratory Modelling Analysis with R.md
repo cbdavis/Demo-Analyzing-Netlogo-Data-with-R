@@ -1,11 +1,11 @@
 These are loose notes for implementing some of the analysis on http://simulation.tbm.tudelft.nl/ema-workbench/
 
 Algorithms
-PRIM
-SOM - self organizing maps
-decision trees
-PCA
-TSNE
+* PRIM
+* SOM - self organizing maps
+* decision trees
+* PCA
+* TSNE
 
 stuff to analyze
 behavior clustering - analyze populations, other stuff tbd
