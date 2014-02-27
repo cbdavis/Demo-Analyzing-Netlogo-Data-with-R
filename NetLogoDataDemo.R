@@ -391,6 +391,7 @@ ggsave(areaplot, file="areaplot.png")
 # OR
 # MAX
 # MIN
+# JOIN
 
 #### NOTE - column names should not contain any punctionation, otherwise the queries may not work.
 # You need to change column names like "team.size" to something like "teamsize"
@@ -406,9 +407,9 @@ sqldf("SELECT AVG(count_sheep) AS avgSheep FROM myDataFrame GROUP BY runNumber")
 # same, but order the values for avgSheep descending
 sqldf("SELECT AVG(count_sheep) AS avgSheep FROM myDataFrame GROUP BY runNumber ORDER BY avgSheep DESC")
 # same, but also give me the runNumber that corresponds to each value
-x = sqldf("SELECT runNumber, AVG(count_sheep) AS avgSheep FROM myDataFrame GROUP BY runNumber ORDER BY avgSheep DESC")
+x = sqldf("SELECT runNumber, AVG(count_wolves) AS avgWolves, AVG(count_sheep) AS avgSheep FROM myDataFrame GROUP BY runNumber ORDER BY avgSheep DESC")
 # plot stuff
-plot(x$runNumber, x$count_sheep)
+plot(x$avgWolves, x$count_sheep)
 # find the distinct values for initial_number_sheep
 sqldf("SELECT DISTINCT initial_number_sheep FROM myDataFrame")
 # get me the distinct combinations of initial_number_sheep and grass_regrowth_time that were used
