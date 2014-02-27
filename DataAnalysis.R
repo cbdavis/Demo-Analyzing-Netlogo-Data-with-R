@@ -23,7 +23,7 @@ options(stringsAsFactors = FALSE)
 # * In the bottom right quadrant, there is a "Packages" tab, with an option to "Install Packages". 
 #   Click on this to install the following libraries: 
 #   * ggplot2 - this will be used to do most of the plotting.
-#   * reshape
+#   * reshape2
 #   * sqldf - used for querying data, performing aggregations, filtering, etc.
 
 #####Basic R examples
@@ -117,17 +117,22 @@ d %*% t(e)
 #these are from two separate packages
 library(ggplot2)
 
+# needed for reshaping data frames
+library(reshape2)
+
 #used for querying data, performing aggregations, filtering, etc.
 library(sqldf)
 
 ############### MAKE SURE THAT THE WORKING DIRECTORY IS SET ###############
 #this line below sets the current working directory 
 #setwd("/home/cbdavis/Demo-Analyzing-Netlogo-Data-with-R")
+# You can also do something like Session -> Set Working Directory -> To Source File Location
 
 #### Make sure to specify the "Table" output for Netlogo
-#read in the data. skip the first 6 lines, the line after that is the header, and the columns are separated by commas
-#You can either specify the full path to the file, or make sure that the working directory for R points to the directory containing the file
-myDataFrame = read.table("/home/cbdavis/Desktop/WolvesSheepRedux/Wolf Sheep Predation experiment-table.csv", skip = 6, sep = ",", head=TRUE)
+#Read in the data. skip the first 6 lines, the line after that is the header, and the columns are separated by commas
+#You can either specify the full path to the file, 
+# or make sure that the working directory for R points to the directory containing the file
+myDataFrame = read.table("Wolf Sheep Predation experiment-table.csv", skip = 6, sep = ",", head=TRUE)
 
 #This gives you a quick summary of what's in the data
 #This is especially important since it tells you what the column names are.
@@ -142,7 +147,9 @@ summary(myDataFrame)
 #this will also show you the names of the column names
 colnames = colnames(myDataFrame)
 
-##### Don't worry about what this means, it cleans up the column names #####
+##### Don't worry about what this means, it cleans up the column names   #####
+##### You can just copy/paste it and re-use it, just make sure that      #####
+##### if your data frame isn't called myDataFrame, then update that part #####
 # Some colnames start with "X.", get rid of this 
 colnames(myDataFrame) = gsub("X\\.", "", colnames(myDataFrame))
 # Get rid of periods at the start and end of the names
@@ -153,9 +160,9 @@ colnames(myDataFrame) = gsub("\\.", "_", colnames(myDataFrame))
 
 # you can also just rename the columns yourself
 colnames(myDataFrame)[1] = "runNumber"  # change "run_number" to "runNumber"
-colnames(myDataFrame)[2] = "grass_is_on"
+colnames(myDataFrame)[2] = "grass_is_on" # used to be ?grass in the data file
 colnames(myDataFrame)[11] = "tick"  # change "step" to "tick"
-colnames(myDataFrame)[14] = "count_grass"
+colnames(myDataFrame)[14] = "count_grass" # there are two columns named grass, we need to distinguish them.
 
 #These are now the data columns that I can work with
 #   myDataFrame$runNumber
@@ -240,6 +247,9 @@ simpleHeatMapOfScatterPlot = ggplot(data=myDataFrame, aes(x=tick, y=count_sheep)
 print(simpleHeatMapOfScatterPlot)
 ggsave(simpleHeatMapOfScatterPlot, file="simpleHeatMapOfScatterPlot.png") 
 
+# make a scatter plot
+ggplot(data=myDataFrame, aes(x=count_grass, y=count_sheep)) + geom_point()
+
 # make a scatter plot with density contours drawn on it
 ggplot(data=myDataFrame, aes(x=count_grass, y=count_sheep)) + geom_point() + geom_density2d()
 
@@ -260,12 +270,12 @@ print(simpleHistogram)
 ggsave(simpleHistogram, file=filename) 
 
 #now just give me a boxplot
-# "group=round(tick/25)" means that we group all the data into boxes 25 steps wide
-# If we just said "group=tick", then we would have 500 boxes, which fills up the whole plot
+# If we just say "group=tick", then we would have 500 boxes, which fills up the whole plot
 # and is hard to read
 ggplot(data=myDataFrame, aes(x=tick, y=count_sheep, group=tick)) + 
   geom_boxplot()
 
+# "group=round(tick/25)" means that we group all the data into boxes 25 steps wide
 boxplot = ggplot(data=myDataFrame, aes(x=tick, y=count_sheep, group=round(tick/25))) + 
   geom_boxplot()
 
@@ -322,6 +332,8 @@ ggplot(data=myDataFrame, aes(x=tick, y=count_sheep)) +
 # count_wolves    10
 # count_grass    100
 
+# The rest of the values in the columns will be duplicated for each of these new rows
+
 #See http://www.statmethods.net/management/reshape.html for what's happening here
 # Note that "count_sheep", "count_wolves", "count_grass" are not in the list
 data2 = melt(myDataFrame, id=c("runNumber", "grass_is_on", "sheep_reproduce", "initial_number_sheep", "grass_regrowth_time", "sheep_gain_from_food", "show_energy", "initial_number_wolves", "wolf_reproduce", "wolf_gain_from_food", "tick"))
@@ -341,6 +353,17 @@ ggsave(areaplot, file="areaplot.png")
 ##### Querying data using SQLDF package #####
 
 # With this part of the tutorial, you're using SQL (http://en.wikipedia.org/wiki/SQL) to run queries over your data
+
+# This is more advanced, but it will give you awesome superpowers
+
+# Whenever you are frustrated by something that is difficult to do in Excel, remember this
+
+# This visualization uses the sqldf package + a scatter plot:
+# Time lapse of 860,000 photovoltaic systems installed across Germany
+# https://www.youtube.com/watch?v=XpvQNn0n_Qw
+# The data I have lists the capacity per post code, but to make the visualization, I need 
+# to calculate the cumulative capacity up to the date the I am visualizing, for all of the 
+# distinct postcodes.  This becomes awesomely easy when using sqldf.
 
 # instructions for the package - http://code.google.com/p/sqldf/
 
@@ -399,54 +422,3 @@ sqldf("SELECT * FROM myDataFrame WHERE count_sheep BETWEEN 20 AND 60")
 sqldf("SELECT * FROM myDataFrame WHERE count_wolves > count_sheep")
 # get me the row with the maximum value for the maximum average component size
 sqldf("SELECT *, MAX(count_sheep) FROM myDataFrame")
-
-##### Working with network data #####
-
-#Complete documentation: http://igraph.sourceforge.net/doc/R/igraph.pdf and at http://igraph.sourceforge.net/doc/R/00Index.html
-#Examples: http://igraph.sourceforge.net/screenshots2.html
-#     you can copy some of the example code from the igraph site, 
-#     but make sure that you're looking at the R examples, and not the Python ones
-
-# A few examples of igraph documented on the TU Delft Wiki:
-# http://wiki.tudelft.nl/bin/view/Research/Igraph
-# http://wiki.tudelft.nl/bin/view/Research/IgraphAnalysisKauffman
-
-networkDataFrame = read.table("network.txt", sep = "\t",head=TRUE)
-#these are the columns:
-#networkDataFrame$tick
-#networkDataFrame$FromNode
-#networkDataFrame$ToNode
-
-#For igraph, we need the first two columns in the data frame to contain information about the edges
-#the first column is the from node & the second is the to node
-#To do this we have to create a new data frame with rearranged columns
-network_data_frame = data.frame(from = networkDataFrame$FromNode,
-                                to = networkDataFrame$ToNode, 
-                                tick = networkDataFrame$tick)
-
-#create a new graph based on the data frame we just created 
-g = graph.data.frame(network_data_frame, directed=TRUE)
-
-#example of calculating the degree distribtuion for a graph
-dd = degree.distribution(g, mode="in", cumulative=TRUE)
-plot(dd, log="xy", xlab="degree", ylab="cumulative frequency", col=1, main="Nonlinear preferential attachment")
-
-#draw a histogram of the shortest paths that occur for edges present at tick = 100
-#here we get the edges in graph g, when get the edges that have a tick value of 100
-edgeInfo = get.edges(g, which(E(g)$tick == 100))
-#create a temporary graph based on the set of edges we just found above
-tempGraph = graph(edgeInfo)
-#find the shortest paths between all the vertices in this graph composed of all edges at tick 100
-shortest_paths = shortest.paths(tempGraph)
-#create a simple histogram of how many paths there are of each length
-hist(shortest_paths)
-
-#make a giant plot that looks cool, but isn't necessarily very useful
-#the first three lines below help with the graph layout.  The only thing you have to check is that "g" is the graph you want to plot.  You don't have to worry about the rest
-g <- simplify(g)
-l <- layout.fruchterman.reingold(g)
-l <- layout.norm(l, -1,1, -1,1) 
-#plot the actual graph, using the layout ("l") that we've created above
-#fruchterman.reingold is a force directed layout (like the wiki movie)
-#don't show vertex labels, vertex size is 1, edge arrow size is 0.3
-plot(g, layout=l, vertex.size=1, vertex.label=NA, edge.arrow.size=0.3, xlim=range(l[,1]), ylim=range(l[,2]))
