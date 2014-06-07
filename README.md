@@ -3,3 +3,5 @@ This is code that is meant to demonstrate how R can be used to analyze data gene
 The model analyzed is the <a href="https://ccl.northwestern.edu/netlogo/models/WolfSheepPredation">Wolf Sheep Predation Model</a>, and the model and data output are included here.
 
 The code is heavily commented, and should work out-of-the-box.  The main things you need to check are your working directory and that you have the specified packages installed.
+
+An HTML version of the code with graphs included is <a href="https://cbdavis.github.io/Demo-Analyzing-Netlogo-Data-with-R/NetLogoDataDemo.html">here</a>
