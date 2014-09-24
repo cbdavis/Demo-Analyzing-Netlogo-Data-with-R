@@ -297,16 +297,19 @@ ggplot(data=myDataFrame, aes(x=tick, y=count_sheep, group=runNumber)) + #use myD
 
 You can navigate back and forth between different graphs by using the left/right arrows in the "Plots" window.  To have multiple graph windows open, you need to tell R specifically to open a new window.  If you're using Windows, this will looks something like this:
 
-windows()
-put your code for plot 1 here
+*windows()*
 
-windows()
-put your code for plot 2 here
+*put your code for plot 1 here*
+
+
+*windows()*
+
+*put your code for plot 2 here*
+
 
 For mac, you would use macintosh() instead of windows.  For Unix/Linux, you would use X11()
 
 See http://www.statmethods.net/graphs/creating.html for more info
-
 
 Give me a heatmap, without the scatter plot.  This can be useful if you have a HUGE number of points that are all in a sort of cloud
 ```{r fig.width=10, fig.height=8}
