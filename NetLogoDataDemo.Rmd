@@ -15,20 +15,22 @@ The main wiki page around these examples is at: http://wiki.tudelft.nl/bin/view/
 The code + data we will be using is at https://github.com/cbdavis/Demo-Analyzing-Netlogo-Data-with-R
 
 The contents are:
+
 * R code
 * the nlogo file used to generate the data. This also includes methods that can write the network structure to a file (included as network.txt)
- * TeamAssemblyModelData.csv - the data from a previous year's exam
+* TeamAssemblyModelData.csv - the data from a previous year's exam
 
 Put all these into the same directory, open up RStudio
 and set your working directory to this directory containing the files. 
 Click on **"Session -> Set Working Directory -> Choose Directory"** to do this. 
 
 Then install the necessary packages for R
+
 * In the bottom right quadrant, there is a "Packages" tab, with an option to "Install Packages". 
    Click on this to install the following libraries: 
-   * ggplot2 - this will be used to do most of the plotting.
-   * reshape2
-   * sqldf - used for querying data, performing aggregations, filtering, etc.
+    * ggplot2 - this will be used to do most of the plotting.
+    * reshape2
+    * sqldf - used for querying data, performing aggregations, filtering, etc.
 
 Basic R examples
 ---
@@ -39,21 +41,25 @@ RStudio has four panels, and in the default config these are:
 **Top Left** - Code - here you can open and work on different script files
 
 **Top Right** - Workspace/History
+
 * This shows all the variables and functions that are currently loaded in the workspace
 * You can click on the variables to see their values, which can be useful to inspect how the code is operating.
 * The history shows all of the commands that you have run.
 
 **Bottom Left** - Console
+
 * commands can be run here
 * You can also find documentation for commands by typing in ?commandName to get help, i.e. ?sum
 
 **Bottom Right** - Files/Plots/Packages/Help
+
 * Files - This shows everything in your current working directory
 * Plots - Once you start plotting, multiple plots will be stored here.  There are arrows in this view that allow you to navigate between multiple plots
 * Packages - Shows all the packages installed and currently loaded
 * Help - Shows documentation for varous functions.  
 
 You can run lines of code by highlighting them, and then clicking on "Run" above.
+
 You can run all the code at once by doing Code -> Run Region -> Run All
 
 Introduction to operations
@@ -146,9 +152,9 @@ Load in libraries needed for plotting
 Load the ggplot2 library which is used for most of the visualizations here to understand why this library is cool, just do a google image search: https://www.google.com/search?q=ggplot2&tbm=isch
 
 For documentation see:
-* http://docs.ggplot2.org/current/
-* http://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf
-* http://had.co.nz/ggplot2/book.pdf
+- http://docs.ggplot2.org/current/
+- http://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf
+- http://had.co.nz/ggplot2/book.pdf
 
 Note that plot() is not the same as ggplot() - these are from two separate packages
 
@@ -184,11 +190,17 @@ myDataFrame = read.table("Wolf Sheep Predation experiment-table.csv", skip = 6, 
 ```
 
 This gives you a quick summary of what's in the data
+
 This is especially important since it tells you what the column names are.
+
 For example, if you see "newcomer.incumbent" then you can access this column using myDataFrame\$newcomer.incumbent
+
 Note: characters that are not letters or numbers (A-Z, a-z, 0-9) may be encoded as periods, 
+
 So a header that looks like "[run number]" will be accessible using myDataFrame\$X.run.number.
+
 What you'll see here is that you're working with a data frame.
+
 It isn't a matrix, but it's an object containing several columns along with some
 additional properties.
 ```{r}
@@ -226,20 +238,20 @@ colnames(myDataFrame)[14] = "count_grass" # there are two columns named grass, w
 ```
 
 These are now the data columns that I can work with
-* myDataFrame\$runNumber
-* myDataFrame\$grass_is_on
-* myDataFrame\$sheep_reproduce
-* myDataFrame\$initial_number_sheep
-* myDataFrame\$grass_regrowth_time
-* myDataFrame\$sheep_gain_from_food
-* myDataFrame\$show_energy
-* myDataFrame\$initial_number_wolves
-* myDataFrame\$wolf_reproduce
-* myDataFrame\$wolf_gain_from_food
-* myDataFrame\$tick
-* myDataFrame\$count_sheep
-* myDataFrame\$count_wolves
-* myDataFrame\$count_grass
+- myDataFrame\$runNumber
+- myDataFrame\$grass_is_on
+- myDataFrame\$sheep_reproduce
+- myDataFrame\$initial_number_sheep
+- myDataFrame\$grass_regrowth_time
+- myDataFrame\$sheep_gain_from_food
+- myDataFrame\$show_energy
+- myDataFrame\$initial_number_wolves
+- myDataFrame\$wolf_reproduce
+- myDataFrame\$wolf_gain_from_food
+- myDataFrame\$tick
+- myDataFrame\$count_sheep
+- myDataFrame\$count_wolves
+- myDataFrame\$count_grass
 
 In the top right panel, you can now click on the "Environment" tab, then click on "myDataFrame" to bring up a table view of it.
 
@@ -400,20 +412,28 @@ ggplot(data=myDataFrame, aes(x=tick, y=count_sheep)) +
 ```
 
 Now need to create a stacked area chart based on the columns below:
-* myDataFrame\$count_sheep
-* myDataFrame\$count_wolves
-* myDataFrame\$count_grass
+- myDataFrame\$count_sheep
+- myDataFrame\$count_wolves
+- myDataFrame\$count_grass
 
 To do this, we need to stack up those columns into a single column.  
 We will use a column beside it to indicate what is being counted
 So instead of:
-count_sheep     count_wolves     count_grass
-     50                10             100
+
+
+| count_sheep | count_wolves | count_grass |
+|-------------|--------------|-------------|
+|     50      |     10       |     100     |
+
 
 We'll have:
-count_sheep     50
-count_wolves    10
-count_grass    100
+
+| variable     | value |
+|--------------|-------|
+| count_sheep  | 50    |
+| count_wolves |  10   |
+| count_grass  | 100   |
+
 
 The rest of the values in the columns will be duplicated for each of these new rows
 
@@ -426,6 +446,7 @@ data2 = melt(myDataFrame, id=c("runNumber", "grass_is_on", "sheep_reproduce", "i
 
 
 Two new columns are introduced- "variable" and "value":
+
 | variable   | value |
 |------------|-------|
 |count_sheep |    50 |
@@ -463,21 +484,21 @@ This is way more than you need, and tutorials are easier to understand, but this
 
 The uppercase terms below are some of the more popular commands that you may find useful.  You can also use lowercase in the queries.  Examples of their use are further below.
 
-* SELECT
-* FROM 
-* WHERE
-* AS
-* DISTINCT
-* COUNT
-* ORDER BY
-* DESC
-* GROUP BY
-* BETWEEN
-* AND
-* OR
-* MAX
-* MIN
-* JOIN
+- SELECT
+- FROM 
+- WHERE
+- AS
+- DISTINCT
+- COUNT
+- ORDER BY
+- DESC
+- GROUP BY
+- BETWEEN
+- AND
+- OR
+- MAX
+- MIN
+- JOIN
 
 **NOTE** - column names should not contain any punctionation, otherwise the queries may not work.
 
