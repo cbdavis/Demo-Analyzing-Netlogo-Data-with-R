@@ -97,7 +97,7 @@ sd(d)
 ```
 
 do a simple plot
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 plot(d)
 ```
 
@@ -145,9 +145,10 @@ Load in libraries needed for plotting
 
 Load the ggplot2 library which is used for most of the visualizations here to understand why this library is cool, just do a google image search: https://www.google.com/search?q=ggplot2&tbm=isch
 
-See http://docs.ggplot2.org/current/ for documentation
-Also http://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf
-and http://had.co.nz/ggplot2/book.pdf
+For documentation see:
+* http://docs.ggplot2.org/current/
+* http://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf
+* http://had.co.nz/ggplot2/book.pdf
 
 Note that plot() is not the same as ggplot() - these are from two separate packages
 
@@ -169,7 +170,7 @@ library(sqldf)
 this line below sets the current working directory 
 
 ```{r}
-setwd("/home/cbdavis/Demo-Analyzing-Netlogo-Data-with-R")
+setwd("/home/cbdavis/Desktop/svn/Demo-Analyzing-Netlogo-Data-with-R")
 ```
 
 You can also do something like **Session -> Set Working Directory -> To Source File Location**
@@ -184,9 +185,9 @@ myDataFrame = read.table("Wolf Sheep Predation experiment-table.csv", skip = 6, 
 
 This gives you a quick summary of what's in the data
 This is especially important since it tells you what the column names are.
-For example, if you see "newcomer.incumbent" then you can access this column using myDataFrame$newcomer.incumbent
+For example, if you see "newcomer.incumbent" then you can access this column using myDataFrame\$newcomer.incumbent
 Note: characters that are not letters or numbers (A-Z, a-z, 0-9) may be encoded as periods, 
-So a header that looks like "[run number]" will be accessible using myDataFrame$X.run.number.
+So a header that looks like "[run number]" will be accessible using myDataFrame\$X.run.number.
 What you'll see here is that you're working with a data frame.
 It isn't a matrix, but it's an object containing several columns along with some
 additional properties.
@@ -225,20 +226,20 @@ colnames(myDataFrame)[14] = "count_grass" # there are two columns named grass, w
 ```
 
 These are now the data columns that I can work with
-* myDataFrame$runNumber
-* myDataFrame$grass_is_on
-* myDataFrame$sheep_reproduce
-* myDataFrame$initial_number_sheep
-* myDataFrame$grass_regrowth_time
-* myDataFrame$sheep_gain_from_food
-* myDataFrame$show_energy
-* myDataFrame$initial_number_wolves
-* myDataFrame$wolf_reproduce
-* myDataFrame$wolf_gain_from_food
-* myDataFrame$tick
-* myDataFrame$count_sheep
-* myDataFrame$count_wolves
-* myDataFrame$count_grass
+* myDataFrame\$runNumber
+* myDataFrame\$grass_is_on
+* myDataFrame\$sheep_reproduce
+* myDataFrame\$initial_number_sheep
+* myDataFrame\$grass_regrowth_time
+* myDataFrame\$sheep_gain_from_food
+* myDataFrame\$show_energy
+* myDataFrame\$initial_number_wolves
+* myDataFrame\$wolf_reproduce
+* myDataFrame\$wolf_gain_from_food
+* myDataFrame\$tick
+* myDataFrame\$count_sheep
+* myDataFrame\$count_wolves
+* myDataFrame\$count_grass
 
 In the top right panel, you can now click on the "Environment" tab, then click on "myDataFrame" to bring up a table view of it.
 
@@ -254,12 +255,12 @@ myDataFrame$count_sheep[indexWithMaxNumSheep]
 ```
 
 Plot a sorted vector of the number of turtles over all time for all the simulations.  This gives you an idea of how often you encounter high, low, medium values
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 plot(sort(myDataFrame$count_sheep))
 ```
 
 just give me a quick scatterplot
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 scatterplot = ggplot(data=myDataFrame, aes(x=tick, y=count_sheep)) + #use myDataFrame for the data, columns for x and y
   geom_point() + #we want to use points
   xlab("tick") +  #specify x and y labels
@@ -269,7 +270,7 @@ print(scatterplot) #display the scatterplot
 ```
 
 Something's going on, but it's useful to distinguish between the different runs, so color the dots by runNumber
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 scatterplot = ggplot(data=myDataFrame, aes(x=tick, y=count_sheep)) + #use myDataFrame for the data, columns for x and y
   geom_point(aes(colour = runNumber)) + #we want to use points, colored by runNumber
   xlab("tick") +  #specify x and y labels
@@ -286,7 +287,7 @@ ggsave(scatterplot, file="scatter.png")
 ```
 
 Do the same with lines.  The only change from above is the addition of "group=runNumber" and geom_line is used instead of geom_point
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 ggplot(data=myDataFrame, aes(x=tick, y=count_sheep, group=runNumber)) + #use myDataFrame for the data, columns for x and y
   geom_line(aes(colour = runNumber)) + #we want to use points, colored by runNumber
   xlab("tick") +  #specify x and y labels
@@ -308,7 +309,7 @@ See http://www.statmethods.net/graphs/creating.html for more info
 
 
 Give me a heatmap, without the scatter plot.  This can be useful if you have a HUGE number of points that are all in a sort of cloud
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 simpleHeatMapOfScatterPlot = ggplot(data=myDataFrame, aes(x=tick, y=count_sheep)) + 
   stat_density2d(geom="tile", aes(fill = ..density..), contour = FALSE) 
 
@@ -316,17 +317,17 @@ print(simpleHeatMapOfScatterPlot)
 ```
 
 Make a scatter plot
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 ggplot(data=myDataFrame, aes(x=count_grass, y=count_sheep)) + geom_point()
 ```
 
 Make a scatter plot with density contours drawn on it
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 ggplot(data=myDataFrame, aes(x=count_grass, y=count_sheep)) + geom_point() + geom_density2d()
 ```
 
 Instead of contours, show dots that are proportionally sized to the density
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 ggplot(data=myDataFrame, aes(x=count_grass, y=count_sheep)) + stat_density2d(geom="point", aes(size = ..density..), contour = FALSE)
 ```
 
@@ -338,7 +339,7 @@ filename = paste(fileprefix, val, ".png", sep="")
 ```
 
 Actually, I'm in the mood for a histogram
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 simpleHistogram = ggplot(data=myDataFrame, aes(x=count_sheep)) + geom_histogram() 
 print(simpleHistogram)
 ```
@@ -346,13 +347,13 @@ print(simpleHistogram)
 
 Now just give me a boxplot
 If we just say "group=tick", then we would have 500 boxes, which fills up the whole plot and is hard to read
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 ggplot(data=myDataFrame, aes(x=tick, y=count_sheep, group=tick)) + 
   geom_boxplot()
 ```
 
 "group=round(tick/25)" means that we group all the data into boxes 25 steps wide
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 boxplot = ggplot(data=myDataFrame, aes(x=tick, y=count_sheep, group=round(tick/25))) + 
   geom_boxplot()
 
@@ -361,44 +362,44 @@ print(boxplot)
 
 
 Show a matrix (i.e. a "facet grid") of individual graphs where every single graph show the values encountered for a single permutation of grass_regrowth_time & initial_number_sheep values
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 ggplot(data=myDataFrame, aes(x=tick, y=count_sheep, group=round(tick/25))) + 
   geom_boxplot() + 
   facet_grid(grass_regrowth_time ~ initial_number_sheep)
 ```
 
 Same, but make the y scales independent per row to stretch things out a bit
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 ggplot(data=myDataFrame, aes(x=tick, y=count_sheep, group=round(tick/25))) + 
   geom_boxplot() + 
   facet_grid(grass_regrowth_time ~ initial_number_sheep, scales="free_y")
 ```
 
 do the same, now just with lines
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 ggplot(data=myDataFrame, aes(x=tick, y=count_sheep)) + 
   geom_line() + 
   facet_grid(grass_regrowth_time ~ initial_number_sheep, scales="free_y")
 ```
 
 This looks weird since there are two repetitions, we should separate these out
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 ggplot(data=myDataFrame, aes(x=tick, y=count_sheep, group=runNumber)) + 
   geom_line(aes(colour = runNumber)) + 
   facet_grid(grass_regrowth_time ~ initial_number_sheep, scales="free_y")
 ```
 
 just show single graphs per runNumber
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 ggplot(data=myDataFrame, aes(x=tick, y=count_sheep)) + 
   geom_point() + 
   facet_wrap(~runNumber)
 ```
 
 Now need to create a stacked area chart based on the columns below:
-* myDataFrame$count_sheep
-* myDataFrame$count_wolves
-* myDataFrame$count_grass
+* myDataFrame\$count_sheep
+* myDataFrame\$count_wolves
+* myDataFrame\$count_grass
 
 To do this, we need to stack up those columns into a single column.  
 We will use a column beside it to indicate what is being counted
@@ -428,7 +429,7 @@ Two new columns are introduced- "variable" and "value":
 |count_wolves|    10 |
 |count_grass |   100 |
 
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 ggplot(data=data2, aes(x=tick, y=value)) + 
   geom_area(aes(fill=variable)) + 
   facet_grid(grass_regrowth_time ~ initial_number_sheep, scales="free")
@@ -496,7 +497,7 @@ sqldf("SELECT COUNT(*) FROM myDataFrame WHERE runNumber<10")
 
 find the average count_sheep for each runNumber (averaged over all ticks)
 ```{r}
-sqldf("SELECT AVG(count_sheep) AS avgSheep FROM myDataFrame GROUP BY runNumber, LIMIT 10")
+sqldf("SELECT AVG(count_sheep) AS avgSheep FROM myDataFrame GROUP BY runNumber LIMIT 10")
 ```
 
 same, but order the values for avgSheep descending
@@ -510,7 +511,7 @@ x = sqldf("SELECT runNumber, AVG(count_wolves) AS avgWolves, AVG(count_sheep) AS
 ```
 
 plot stuff
-```{r fig.width=7, fig.height=6}
+```{r fig.width=10, fig.height=8}
 plot(x$avgWolves, x$count_sheep)
 ```
 
