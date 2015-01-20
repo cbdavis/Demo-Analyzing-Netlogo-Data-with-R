@@ -208,7 +208,7 @@ colnames(myDataFrame) = gsub("X\\.", "", colnames(myDataFrame))
 ```
 Get rid of periods at the start and end of the names
 ```{r}
-colnames(myDataFrame) = gsub("^\\.|\\.$", "", colnames(myDataFrame))
+colnames(myDataFrame) = gsub("^\\.+|\\.+$", "", colnames(myDataFrame))
 ```
 
 Convert all periods into underscores
