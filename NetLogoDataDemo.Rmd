@@ -213,7 +213,7 @@ colnames(myDataFrame) = gsub("^\\.+|\\.+$", "", colnames(myDataFrame))
 
 Convert all periods into underscores
 ```{r}
-colnames(myDataFrame) = gsub("\\.", "_", colnames(myDataFrame))
+colnames(myDataFrame) = gsub("\\.+", "_", colnames(myDataFrame))
 ```
 
 you can also just rename the columns yourself
